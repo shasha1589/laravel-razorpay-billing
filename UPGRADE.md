@@ -8,6 +8,10 @@ Always:
 2. Run `php artisan migrate`. New versions add migrations; published migrations are never changed.
 3. If you published the config, compare it with the package's `config/razorpay-billing.php` for new options.
 
+## 0.1.1
+
+Nothing to do. Only the test suite and CI changed.
+
 ## 0.1.0
 
 First release. Nothing to upgrade.

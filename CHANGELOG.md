@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-20
+
+No changes to package code; installing `0.1.0` or `0.1.1` gives the same runtime behaviour.
+
+### Fixed
+
+- Test suite on PHP 8.3+ (Pest 4): the test helper `fixture()` clashed with Pest 4's global `fixture()` function and was renamed to `jsonFixture()`. CI now passes on PHP 8.2–8.5 with Laravel 12 and 13.
+- CI uses `actions/checkout@v5`.
+
 ## [0.1.0] - 2026-10-20
 
 First release. Supports PHP 8.2+ and Laravel 12 and 13.
@@ -49,5 +58,6 @@ First release. Supports PHP 8.2+ and Laravel 12 and 13.
 - Payments from webhooks are linked to a billable only through server-created order notes, never through payment notes set in the browser.
 - Only Razorpay IDs, statuses, amounts and methods are stored, never card, UPI or bank details.
 
-[Unreleased]: https://github.com/shasha1589/laravel-razorpay-billing/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/shasha1589/laravel-razorpay-billing/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/shasha1589/laravel-razorpay-billing/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/shasha1589/laravel-razorpay-billing/releases/tag/v0.1.0
