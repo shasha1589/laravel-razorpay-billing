@@ -92,7 +92,7 @@ it('has query scopes', function () {
 it('fills state from a Razorpay subscription entity', function () {
     $subscription = makeSubscription($this->user, ['status' => SubscriptionStatus::Created]);
 
-    $subscription->fillFromRazorpay(fixture('subscriptions/active', ['payment_method' => 'upi', 'quantity' => 2]));
+    $subscription->fillFromRazorpay(jsonFixture('subscriptions/active', ['payment_method' => 'upi', 'quantity' => 2]));
 
     expect($subscription->status)->toBe(SubscriptionStatus::Active)
         ->and($subscription->quantity)->toBe(2)
@@ -123,7 +123,7 @@ it('ignores unknown statuses', function () {
 });
 
 it('syncs from Razorpay', function () {
-    Http::fake(['api.razorpay.com/v1/subscriptions/sub_x' => Http::response(fixture('subscriptions/active', ['id' => 'sub_x']))]);
+    Http::fake(['api.razorpay.com/v1/subscriptions/sub_x' => Http::response(jsonFixture('subscriptions/active', ['id' => 'sub_x']))]);
     $subscription = makeSubscription($this->user, ['razorpay_id' => 'sub_x', 'status' => SubscriptionStatus::Created]);
 
     $subscription->syncFromRazorpay();

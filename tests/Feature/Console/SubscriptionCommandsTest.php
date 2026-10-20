@@ -37,7 +37,7 @@ it('syncs every non-terminal subscription from Razorpay', function () {
     Event::fake([SubscriptionActivated::class]);
     commandSubscription($this->user, 'sub_a', ['status' => SubscriptionStatus::Created]);
     commandSubscription($this->user, 'sub_b', ['status' => SubscriptionStatus::Cancelled]);
-    Http::fake(['api.razorpay.com/v1/subscriptions/*' => fn (Request $request) => Http::response(fixture('subscriptions/active', ['id' => basename($request->url())]))]);
+    Http::fake(['api.razorpay.com/v1/subscriptions/*' => fn (Request $request) => Http::response(jsonFixture('subscriptions/active', ['id' => basename($request->url())]))]);
 
     $this->artisan('razorpay:sync')->expectsOutputToContain('Synced 1 subscription')->assertSuccessful();
 
@@ -49,7 +49,7 @@ it('syncs every non-terminal subscription from Razorpay', function () {
 it('syncs a single subscription', function () {
     commandSubscription($this->user, 'sub_a');
     commandSubscription($this->user, 'sub_b');
-    Http::fake(['*' => Http::response(fixture('subscriptions/active', ['id' => 'sub_b']))]);
+    Http::fake(['*' => Http::response(jsonFixture('subscriptions/active', ['id' => 'sub_b']))]);
 
     $this->artisan('razorpay:sync', ['--subscription' => 'sub_b'])->assertSuccessful();
     $this->artisan('razorpay:sync', ['--subscription' => 'sub_missing'])->assertFailed();
@@ -64,7 +64,7 @@ it('reports failures and keeps going', function () {
     app()->forgetInstance(RazorpayClient::class);
     Http::fake([
         'api.razorpay.com/v1/subscriptions/sub_a' => Http::response(['error' => ['description' => 'Nope']], 404),
-        'api.razorpay.com/v1/subscriptions/sub_b' => Http::response(fixture('subscriptions/active', ['id' => 'sub_b'])),
+        'api.razorpay.com/v1/subscriptions/sub_b' => Http::response(jsonFixture('subscriptions/active', ['id' => 'sub_b'])),
     ]);
 
     $this->artisan('razorpay:sync')

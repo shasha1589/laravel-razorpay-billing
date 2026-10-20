@@ -29,13 +29,13 @@ beforeEach(function () {
  */
 function fakeOrderNotes(array $notes): void
 {
-    Http::fake(['api.razorpay.com/v1/orders/*' => fn ($request) => Http::response(fixture('orders/order', ['id' => basename($request->url()), 'notes' => $notes]))]);
+    Http::fake(['api.razorpay.com/v1/orders/*' => fn ($request) => Http::response(jsonFixture('orders/order', ['id' => basename($request->url()), 'notes' => $notes]))]);
 }
 
 it('stores a captured payment linked through its order notes', function () {
     fakeOrderNotes($this->billableNotes);
 
-    $this->postWebhook(fixture('webhooks/payment.captured'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/payment.captured'))->assertOk();
 
     Http::assertSent(fn ($request) => $request->url() === 'https://api.razorpay.com/v1/orders/order_DESlLckIVRkHWj');
 
@@ -52,7 +52,7 @@ it('stores a captured payment linked through its order notes', function () {
 it('ignores payments whose order was not created by this package', function () {
     fakeOrderNotes([]);
 
-    $this->postWebhook(fixture('webhooks/payment.captured'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/payment.captured'))->assertOk();
 
     expect(Payment::query()->count())->toBe(0);
     Event::assertNotDispatched(PaymentCaptured::class);
@@ -61,7 +61,7 @@ it('ignores payments whose order was not created by this package', function () {
 it('ignores payments whose order is not found', function () {
     Http::fake(['api.razorpay.com/v1/orders/*' => Http::response(['error' => ['description' => 'not found']], 404)]);
 
-    $this->postWebhook(fixture('webhooks/payment.captured'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/payment.captured'))->assertOk();
 
     expect(Payment::query()->count())->toBe(0);
 });
@@ -69,7 +69,7 @@ it('ignores payments whose order is not found', function () {
 it('does not trust billable notes on the payment itself', function () {
     fakeOrderNotes([]);
 
-    $this->postWebhook(fixture('webhooks/payment.captured', ['payload' => ['payment' => ['entity' => ['notes' => $this->billableNotes]]]]))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/payment.captured', ['payload' => ['payment' => ['entity' => ['notes' => $this->billableNotes]]]]))->assertOk();
 
     expect(Payment::query()->count())->toBe(0);
 });
@@ -77,7 +77,7 @@ it('does not trust billable notes on the payment itself', function () {
 it('stores a failed payment', function () {
     fakeOrderNotes($this->billableNotes);
 
-    $this->postWebhook(fixture('webhooks/payment.failed'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/payment.failed'))->assertOk();
 
     expect(Payment::query()->sole()->status)->toBe(PaymentStatus::Failed);
     Event::assertDispatched(PaymentFailed::class);
@@ -85,7 +85,7 @@ it('stores a failed payment', function () {
 
 it('never moves a captured payment back to failed', function () {
     fakeOrderNotes($this->billableNotes);
-    $captured = fixture('webhooks/payment.captured');
+    $captured = jsonFixture('webhooks/payment.captured');
     $failed = $captured;
     $failed['event'] = 'payment.failed';
     $failed['payload']['payment']['entity']['status'] = 'failed';
@@ -106,8 +106,8 @@ it('updates the refunded amount on refund.processed and fires once', function ()
     $payment = new Payment(['razorpay_payment_id' => 'pay_FPoJKWQQ8lK13n', 'amount' => 500000, 'currency' => 'INR', 'status' => PaymentStatus::Captured]);
     $payment->billable()->associate($this->user)->save();
 
-    $this->postWebhook(fixture('webhooks/refund.processed'), 'evt_r1')->assertOk();
-    $this->postWebhook(fixture('webhooks/refund.processed'), 'evt_r2')->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/refund.processed'), 'evt_r1')->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/refund.processed'), 'evt_r2')->assertOk();
 
     expect($payment->fresh()->amount_refunded)->toBe(190000)
         ->and($payment->fresh()->partiallyRefunded())->toBeTrue()
@@ -119,7 +119,7 @@ it('never lowers the refunded amount', function () {
     $payment = new Payment(['razorpay_payment_id' => 'pay_FPoJKWQQ8lK13n', 'amount' => 500000, 'currency' => 'INR', 'status' => PaymentStatus::Captured, 'amount_refunded' => 300000]);
     $payment->billable()->associate($this->user)->save();
 
-    $this->postWebhook(fixture('webhooks/refund.processed'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/refund.processed'))->assertOk();
 
     expect($payment->fresh()->amount_refunded)->toBe(300000);
     Event::assertNotDispatched(RefundProcessed::class);
@@ -129,8 +129,8 @@ it('fires invoice events, linking the subscription when present', function () {
     $subscription = new Subscription(['type' => 'default', 'razorpay_id' => 'sub_1', 'razorpay_plan_id' => 'plan_1', 'status' => SubscriptionStatus::Active]);
     $subscription->billable()->associate($this->user)->save();
 
-    $this->postWebhook(fixture('webhooks/invoice.paid', ['payload' => ['invoice' => ['entity' => ['subscription_id' => 'sub_1']]]]))->assertOk();
-    $this->postWebhook(fixture('webhooks/invoice.expired'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/invoice.paid', ['payload' => ['invoice' => ['entity' => ['subscription_id' => 'sub_1']]]]))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/invoice.expired'))->assertOk();
 
     Event::assertDispatched(InvoicePaid::class, fn ($e) => $e->subscription?->is($subscription) && $e->billable?->is($this->user) && $e->invoice['id'] === 'inv_DEWHZlfIcdVIXL');
     Event::assertDispatched(InvoiceExpired::class, fn ($e) => $e->subscription === null && $e->billable === null);
@@ -140,8 +140,8 @@ it('updates the mandate status from token webhooks', function (string $webhook, 
     $subscription = new Subscription(['type' => 'default', 'razorpay_id' => 'sub_1', 'razorpay_plan_id' => 'plan_1', 'status' => SubscriptionStatus::Active, 'razorpay_token_id' => 'token_FVIP5DVexjoZjF']);
     $subscription->billable()->associate($this->user)->save();
 
-    $this->postWebhook(fixture("webhooks/{$webhook}"), 'evt_t1')->assertOk();
-    $this->postWebhook(fixture("webhooks/{$webhook}"), 'evt_t2')->assertOk();
+    $this->postWebhook(jsonFixture("webhooks/{$webhook}"), 'evt_t1')->assertOk();
+    $this->postWebhook(jsonFixture("webhooks/{$webhook}"), 'evt_t2')->assertOk();
 
     expect($subscription->fresh()->mandate_status)->toBe($status);
     Event::assertDispatchedTimes($event, 1);
@@ -151,7 +151,7 @@ it('updates the mandate status from token webhooks', function (string $webhook, 
 ]);
 
 it('ignores tokens it cannot match', function () {
-    $this->postWebhook(fixture('webhooks/token.cancelled'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/token.cancelled'))->assertOk();
 
     Event::assertNotDispatched(MandateCancelled::class);
 });

@@ -11,7 +11,7 @@ beforeEach(function () {
 });
 
 it('creates a plan', function () {
-    Http::fake(['api.razorpay.com/v1/plans' => Http::response(fixture('plans/plan'))]);
+    Http::fake(['api.razorpay.com/v1/plans' => Http::response(jsonFixture('plans/plan'))]);
 
     $payload = ['period' => 'monthly', 'interval' => 1, 'item' => ['name' => 'Pro', 'amount' => 1999900, 'currency' => 'INR']];
 
@@ -20,19 +20,19 @@ it('creates a plan', function () {
 });
 
 it('fetches a plan', function () {
-    Http::fake(['api.razorpay.com/v1/plans/plan_00000000000001' => Http::response(fixture('plans/plan'))]);
+    Http::fake(['api.razorpay.com/v1/plans/plan_00000000000001' => Http::response(jsonFixture('plans/plan'))]);
 
     expect($this->plans->fetch('plan_00000000000001')['period'])->toBe('monthly');
 });
 
 it('lists plans', function () {
-    Http::fake(['api.razorpay.com/v1/plans?count=10&skip=0' => Http::response(fixture('plans/collection'))]);
+    Http::fake(['api.razorpay.com/v1/plans?count=10&skip=0' => Http::response(jsonFixture('plans/collection'))]);
 
     expect($this->plans->all(['count' => 10, 'skip' => 0])['count'])->toBe(2);
 });
 
 it('iterates over all plans', function () {
-    Http::fake(['api.razorpay.com/v1/plans*' => Http::response(fixture('plans/collection'))]);
+    Http::fake(['api.razorpay.com/v1/plans*' => Http::response(jsonFixture('plans/collection'))]);
 
     expect($this->plans->cursor()->pluck('id')->all())->toBe(['plan_00000000000001', 'plan_00000000000002']);
 });

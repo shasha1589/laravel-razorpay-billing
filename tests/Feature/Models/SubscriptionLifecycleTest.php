@@ -43,7 +43,7 @@ beforeEach(function () {
  */
 function fakeSubscriptionApi(array $response = []): void
 {
-    Http::fake(['api.razorpay.com/v1/subscriptions/*' => Http::response(fixture('subscriptions/active', [
+    Http::fake(['api.razorpay.com/v1/subscriptions/*' => Http::response(jsonFixture('subscriptions/active', [
         'id' => 'sub_00000000000001',
         'quantity' => 2,
         'current_end' => Carbon::parse('2026-11-01 00:00:00')->getTimestamp(),
@@ -159,8 +159,8 @@ it('does not touch an ended subscription', function () {
 
 it('pauses and resumes', function () {
     Http::fake(['*' => Http::sequence()
-        ->push(fixture('subscriptions/active', ['id' => 'sub_00000000000001', 'quantity' => 2, 'status' => 'paused']))
-        ->push(fixture('subscriptions/active', ['id' => 'sub_00000000000001', 'quantity' => 2]))]);
+        ->push(jsonFixture('subscriptions/active', ['id' => 'sub_00000000000001', 'quantity' => 2, 'status' => 'paused']))
+        ->push(jsonFixture('subscriptions/active', ['id' => 'sub_00000000000001', 'quantity' => 2]))]);
 
     $this->subscription->pause();
 

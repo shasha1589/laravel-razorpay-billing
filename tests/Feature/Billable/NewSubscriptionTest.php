@@ -25,7 +25,7 @@ beforeEach(function () {
 
     $this->user = User::create(['name' => 'Gaurav Kumar', 'email' => 'gaurav.kumar@example.com']);
 
-    Http::fake(['api.razorpay.com/v1/subscriptions' => Http::response(fixture('subscriptions/created'))]);
+    Http::fake(['api.razorpay.com/v1/subscriptions' => Http::response(jsonFixture('subscriptions/created'))]);
 });
 
 it('creates a Razorpay subscription and a local row in created status', function () {
@@ -125,7 +125,7 @@ it('drops UPI from mixed methods above the limit', function () {
 });
 
 it('checks the UPI limit against a raw plan ID by fetching the plan', function () {
-    Http::fake(['api.razorpay.com/v1/plans/plan_RAW00000000001' => Http::response(fixture('plans/plan', ['id' => 'plan_RAW00000000001']))]);
+    Http::fake(['api.razorpay.com/v1/plans/plan_RAW00000000001' => Http::response(jsonFixture('plans/plan', ['id' => 'plan_RAW00000000001']))]);
 
     $this->user->newSubscription('default', 'plan_RAW00000000001')->totalCount(6)->methods(['upi'])->create();
 })->throws(SubscriptionCreationFailed::class, 'UPI AutoPay');

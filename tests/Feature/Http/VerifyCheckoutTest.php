@@ -29,7 +29,7 @@ function signedPayload(string $paymentId = 'pay_1', string $subscriptionId = 'su
 }
 
 it('verifies a valid signature and syncs the subscription', function () {
-    Http::fake(['api.razorpay.com/v1/subscriptions/sub_00000000000001' => Http::response(fixture('subscriptions/active'))]);
+    Http::fake(['api.razorpay.com/v1/subscriptions/sub_00000000000001' => Http::response(jsonFixture('subscriptions/active'))]);
 
     $this->postJson(route('razorpay-billing.verify'), signedPayload())
         ->assertOk()

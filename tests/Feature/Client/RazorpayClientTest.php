@@ -22,7 +22,7 @@ beforeEach(function () {
 });
 
 it('sends authenticated JSON requests to the API base URL', function () {
-    Http::fake(['api.razorpay.com/v1/customers' => Http::response(fixture('customers/customer'))]);
+    Http::fake(['api.razorpay.com/v1/customers' => Http::response(jsonFixture('customers/customer'))]);
 
     $this->client->post('customers', ['name' => 'Gaurav Kumar']);
 
@@ -51,7 +51,7 @@ it('uses the configured base URL', function () {
 });
 
 it('maps a Razorpay error response to an exception with its details', function () {
-    Http::fake(['*' => Http::response(fixture('errors/bad-request'), 400)]);
+    Http::fake(['*' => Http::response(jsonFixture('errors/bad-request'), 400)]);
 
     try {
         $this->client->post('customers', ['contact' => '1']);
@@ -140,7 +140,7 @@ it('does not retry writes on connection errors', function () {
 });
 
 it('does not retry client errors', function () {
-    Http::fake(['*' => Http::response(fixture('errors/bad-request'), 400)]);
+    Http::fake(['*' => Http::response(jsonFixture('errors/bad-request'), 400)]);
 
     expect(fn () => $this->client->get('plans'))->toThrow(BadRequestException::class);
 

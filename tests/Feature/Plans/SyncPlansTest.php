@@ -24,12 +24,12 @@ function fakePlansApi(array $collection): void
     Http::fake(function (Request $request) use ($collection) {
         return $request->method() === 'GET'
             ? Http::response($collection)
-            : Http::response(fixture('plans/plan', ['id' => 'plan_new']));
+            : Http::response(jsonFixture('plans/plan', ['id' => 'plan_new']));
     });
 }
 
 it('creates plans that do not exist in Razorpay', function () {
-    fakePlansApi(fixture('plans/collection'));
+    fakePlansApi(jsonFixture('plans/collection'));
 
     $this->artisan('razorpay:sync-plans')
         ->expectsTable(['Plan key', 'Status', 'Razorpay plan ID'], [['pro-monthly', 'created', 'plan_new']])
@@ -43,7 +43,7 @@ it('creates plans that do not exist in Razorpay', function () {
 });
 
 it('leaves existing matching plans alone', function () {
-    fakePlansApi(remotePlans(fixture('plans/plan')));
+    fakePlansApi(remotePlans(jsonFixture('plans/plan')));
 
     $this->artisan('razorpay:sync-plans')
         ->expectsTable(['Plan key', 'Status', 'Razorpay plan ID'], [['pro-monthly', 'exists', 'plan_00000000000001']])
@@ -53,7 +53,7 @@ it('leaves existing matching plans alone', function () {
 });
 
 it('reports a conflict instead of modifying a plan whose price changed', function () {
-    fakePlansApi(remotePlans(fixture('plans/plan', ['item' => ['amount' => 999900]])));
+    fakePlansApi(remotePlans(jsonFixture('plans/plan', ['item' => ['amount' => 999900]])));
 
     $this->artisan('razorpay:sync-plans')
         ->expectsTable(['Plan key', 'Status', 'Razorpay plan ID'], [['pro-monthly', 'conflict', 'plan_00000000000001']])
@@ -77,7 +77,7 @@ it('is safe to run twice', function () {
     $created = [];
     Http::fake(function (Request $request) use (&$created) {
         if ($request->method() === 'POST') {
-            return Http::response($created[] = fixture('plans/plan', ['id' => 'plan_new']));
+            return Http::response($created[] = jsonFixture('plans/plan', ['id' => 'plan_new']));
         }
 
         return Http::response(remotePlans(...$created));
@@ -113,7 +113,7 @@ it('resolves plan IDs from cache without calling Razorpay', function () {
 });
 
 it('rebuilds the plan ID map from Razorpay when the cache is empty', function () {
-    fakePlansApi(remotePlans(fixture('plans/plan')));
+    fakePlansApi(remotePlans(jsonFixture('plans/plan')));
 
     expect(app(PlanRepository::class)->razorpayId('pro-monthly'))->toBe('plan_00000000000001')
         ->and(Cache::get('razorpay-billing:plan:pro-monthly'))->toBe('plan_00000000000001');

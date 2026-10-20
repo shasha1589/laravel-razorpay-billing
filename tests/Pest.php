@@ -16,7 +16,7 @@ uses()->beforeEach(fn () => Http::preventStrayRequests())->in('Unit', 'Feature')
  * @param  array<string, mixed>  $overrides
  * @return array<string, mixed>
  */
-function fixture(string $name, array $overrides = []): array
+function jsonFixture(string $name, array $overrides = []): array
 {
     $data = json_decode((string) file_get_contents(__DIR__."/Fixtures/{$name}.json"), true, flags: JSON_THROW_ON_ERROR);
     unset($data['_doc']);
@@ -33,7 +33,7 @@ function fixture(string $name, array $overrides = []): array
  */
 function subscriptionWebhook(string $event, string $status, array $entity = [], int $createdAt = 1567690383): array
 {
-    $payload = fixture('webhooks/subscription.charged');
+    $payload = jsonFixture('webhooks/subscription.charged');
     unset($payload['payload']['payment']);
     $payload['event'] = $event;
     $payload['contains'] = ['subscription'];

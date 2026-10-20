@@ -17,7 +17,7 @@ beforeEach(function () {
 });
 
 it('creates an order with billable notes and returns a Checkout', function () {
-    Http::fake(['api.razorpay.com/v1/orders' => Http::response(fixture('orders/order'))]);
+    Http::fake(['api.razorpay.com/v1/orders' => Http::response(jsonFixture('orders/order'))]);
 
     $checkout = $this->user->charge(5000, ['receipt' => 'receipt#1', 'notes' => ['sku' => 'ebook'], 'description' => 'E-book']);
 
@@ -56,8 +56,8 @@ it('validates charge input', function (int $amount, array $options, string $mess
 it('stores the payment when the checkout is verified', function () {
     Event::fake([PaymentCaptured::class]);
     Http::fake([
-        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k' => Http::response(fixture('payments/payment')),
-        'api.razorpay.com/v1/orders/order_RB58MiP5SPFYyM' => Http::response(fixture('orders/order', ['notes' => ['billable_type' => User::class, 'billable_id' => (string) $this->user->id]])),
+        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k' => Http::response(jsonFixture('payments/payment')),
+        'api.razorpay.com/v1/orders/order_RB58MiP5SPFYyM' => Http::response(jsonFixture('orders/order', ['notes' => ['billable_type' => User::class, 'billable_id' => (string) $this->user->id]])),
     ]);
 
     $this->postJson(route('razorpay-billing.verify'), [
@@ -120,8 +120,8 @@ it('refunds part of a payment and applies a processed refund at once', function 
     Event::fake([RefundProcessed::class]);
     $payment = capturedPayment($this->user);
     Http::fake([
-        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k/refund' => Http::response(fixture('refunds/refund', ['amount' => 2000, 'payment_id' => 'pay_DG4ZdRK8ZnXC3k'])),
-        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k' => Http::response(fixture('payments/payment', ['amount_refunded' => 2000])),
+        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k/refund' => Http::response(jsonFixture('refunds/refund', ['amount' => 2000, 'payment_id' => 'pay_DG4ZdRK8ZnXC3k'])),
+        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k' => Http::response(jsonFixture('payments/payment', ['amount_refunded' => 2000])),
     ]);
 
     $refund = $payment->refund(2000, ['reason' => 'damaged']);
@@ -133,14 +133,14 @@ it('refunds part of a payment and applies a processed refund at once', function 
     Event::assertDispatchedTimes(RefundProcessed::class, 1);
 
     // The refund.processed webhook that follows does not fire again.
-    $this->postWebhook(fixture('webhooks/refund.processed', ['payload' => ['payment' => ['entity' => ['id' => 'pay_DG4ZdRK8ZnXC3k', 'amount' => 5000, 'amount_refunded' => 2000]]]]))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/refund.processed', ['payload' => ['payment' => ['entity' => ['id' => 'pay_DG4ZdRK8ZnXC3k', 'amount' => 5000, 'amount_refunded' => 2000]]]]))->assertOk();
     Event::assertDispatchedTimes(RefundProcessed::class, 1);
 });
 
 it('refunds in full without an amount and leaves a pending refund to the webhook', function () {
     Event::fake([RefundProcessed::class]);
     $payment = capturedPayment($this->user);
-    Http::fake(['api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k/refund' => Http::response(fixture('refunds/refund', ['status' => 'pending']))]);
+    Http::fake(['api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k/refund' => Http::response(jsonFixture('refunds/refund', ['status' => 'pending']))]);
 
     $payment->refund();
 
@@ -153,8 +153,8 @@ it('refunds in full without an amount and leaves a pending refund to the webhook
 it('marks a fully refunded payment', function () {
     $payment = capturedPayment($this->user);
     Http::fake([
-        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k/refund' => Http::response(fixture('refunds/refund')),
-        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k' => Http::response(fixture('payments/payment', ['amount_refunded' => 5000, 'status' => 'refunded'])),
+        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k/refund' => Http::response(jsonFixture('refunds/refund')),
+        'api.razorpay.com/v1/payments/pay_DG4ZdRK8ZnXC3k' => Http::response(jsonFixture('payments/payment', ['amount_refunded' => 5000, 'status' => 'refunded'])),
     ]);
 
     $payment->refund();

@@ -60,7 +60,7 @@ it('sets ends_at when cancelled', function () {
 });
 
 it('handles subscription.charged: periods, payment, token and events', function () {
-    $this->postWebhook(fixture('webhooks/subscription.charged'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'))->assertOk();
 
     $subscription = $this->subscription->fresh();
     $payment = Payment::query()->sole();
@@ -83,8 +83,8 @@ it('handles subscription.charged: periods, payment, token and events', function 
 });
 
 it('fires SubscriptionCharged once when the same charge is delivered twice', function () {
-    $this->postWebhook(fixture('webhooks/subscription.charged'), 'evt_a')->assertOk();
-    $this->postWebhook(fixture('webhooks/subscription.charged'), 'evt_b')->assertOk(); // redelivered with a new event ID
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'), 'evt_a')->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'), 'evt_b')->assertOk(); // redelivered with a new event ID
 
     expect(Payment::query()->count())->toBe(1);
     Event::assertDispatchedTimes(Events\SubscriptionCharged::class, 1);
@@ -92,7 +92,7 @@ it('fires SubscriptionCharged once when the same charge is delivered twice', fun
 });
 
 it('handles charged before activated', function () {
-    $this->postWebhook(fixture('webhooks/subscription.charged'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'))->assertOk();
     $this->postWebhook(subscriptionWebhook('subscription.activated', 'active', createdAt: 1567690300))->assertOk();
 
     expect($this->subscription->fresh()->status)->toBe(SubscriptionStatus::Active);
@@ -154,7 +154,7 @@ it('syncs plan and quantity on subscription.updated', function () {
 });
 
 it('does not fire events again when a webhook follows a checkout verification', function () {
-    Http::fake(['api.razorpay.com/v1/subscriptions/sub_00000000000001' => Http::response(fixture('subscriptions/active', ['id' => 'sub_00000000000001']))]);
+    Http::fake(['api.razorpay.com/v1/subscriptions/sub_00000000000001' => Http::response(jsonFixture('subscriptions/active', ['id' => 'sub_00000000000001']))]);
 
     $this->subscription->syncFromRazorpay();
     $this->postWebhook(subscriptionWebhook('subscription.activated', 'active', createdAt: now()->subMinute()->getTimestamp()))->assertOk();

@@ -13,7 +13,7 @@ beforeEach(function () {
 });
 
 it('creates a Razorpay customer from the billable', function () {
-    Http::fake(['api.razorpay.com/v1/customers' => Http::response(fixture('customers/customer'))]);
+    Http::fake(['api.razorpay.com/v1/customers' => Http::response(jsonFixture('customers/customer'))]);
 
     expect($this->user->createAsRazorpayCustomer(['notes' => ['team' => 'a']]))->toBe('cust_1Aa00000000001')
         ->and($this->user->fresh()->razorpay_customer_id)->toBe('cust_1Aa00000000001');
@@ -28,7 +28,7 @@ it('creates a Razorpay customer from the billable', function () {
 });
 
 it('sends the billing GSTIN when set', function () {
-    Http::fake(['*' => Http::response(fixture('customers/customer'))]);
+    Http::fake(['*' => Http::response(jsonFixture('customers/customer'))]);
     $this->user->forceFill(['billing_gstin' => '29ABCDE1234F1Z5'])->save();
 
     $this->user->createAsRazorpayCustomer();
@@ -51,13 +51,13 @@ it('returns the existing customer ID without calling Razorpay', function () {
 });
 
 it('creates the customer when missing', function () {
-    Http::fake(['*' => Http::response(fixture('customers/customer'))]);
+    Http::fake(['*' => Http::response(jsonFixture('customers/customer'))]);
 
     expect($this->user->createOrGetRazorpayCustomer())->toBe('cust_1Aa00000000001');
 });
 
 it('updates the Razorpay customer', function () {
-    Http::fake(['api.razorpay.com/v1/customers/cust_1' => Http::response(fixture('customers/customer'))]);
+    Http::fake(['api.razorpay.com/v1/customers/cust_1' => Http::response(jsonFixture('customers/customer'))]);
     $this->user->forceFill(['razorpay_customer_id' => 'cust_1'])->save();
 
     $this->user->updateRazorpayCustomer(['name' => 'New Name']);

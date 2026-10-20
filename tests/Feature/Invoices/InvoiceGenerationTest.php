@@ -36,7 +36,7 @@ it('generates a GST invoice for a subscription charge', function () {
     Event::fake([GstInvoiceGenerated::class]);
     $this->user->forceFill(['billing_state_code' => '27', 'billing_gstin' => '27ABCDE1234F1Z5'])->save();
 
-    $this->postWebhook(fixture('webhooks/subscription.charged'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'))->assertOk();
 
     $invoice = $this->user->invoices()->sole();
     expect($invoice)
@@ -54,16 +54,16 @@ it('generates a GST invoice for a subscription charge', function () {
 });
 
 it('generates one invoice per payment however often the charge is delivered', function () {
-    $this->postWebhook(fixture('webhooks/subscription.charged'), 'evt_1')->assertOk();
-    $this->postWebhook(fixture('webhooks/subscription.charged'), 'evt_2')->assertOk();
-    $this->postWebhook(fixture('webhooks/payment.captured', ['payload' => ['payment' => ['entity' => ['id' => 'pay_DEXFWroJ6LikKT']]]]), 'evt_3')->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'), 'evt_1')->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'), 'evt_2')->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/payment.captured', ['payload' => ['payment' => ['entity' => ['id' => 'pay_DEXFWroJ6LikKT']]]]), 'evt_3')->assertOk();
 
     expect(Invoice::query()->count())->toBe(1);
 });
 
 it('numbers invoices consecutively', function () {
-    $this->postWebhook(fixture('webhooks/subscription.charged'))->assertOk();
-    $this->postWebhook(fixture('webhooks/subscription.charged', ['payload' => ['payment' => ['entity' => ['id' => 'pay_SECOND']]]]))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged', ['payload' => ['payment' => ['entity' => ['id' => 'pay_SECOND']]]]))->assertOk();
 
     expect(Invoice::query()->orderBy('id')->pluck('number')->all())->toBe(['INV/2026-27/000001', 'INV/2026-27/000002']);
 });
@@ -72,7 +72,7 @@ it('generates an export invoice for a foreign customer', function () {
     config(['razorpay-billing.invoices.lut_reference' => 'AD290000000000X']);
     $this->user->forceFill(['billing_state_code' => '96'])->save();
 
-    $this->postWebhook(fixture('webhooks/subscription.charged'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'))->assertOk();
 
     $invoice = Invoice::query()->sole();
     expect($invoice->isExport())->toBeTrue()
@@ -81,7 +81,7 @@ it('generates an export invoice for a foreign customer', function () {
 });
 
 it('generates an intra-state invoice when the buyer is in the seller state', function () {
-    $this->postWebhook(fixture('webhooks/subscription.charged'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'))->assertOk();
 
     $invoice = Invoice::query()->sole();
     expect($invoice->isIntraState())->toBeTrue()
@@ -89,9 +89,9 @@ it('generates an intra-state invoice when the buyer is in the seller state', fun
 });
 
 it('generates invoices for one-time payments', function () {
-    Http::fake(['api.razorpay.com/v1/orders/*' => Http::response(fixture('orders/order', ['notes' => ['billable_type' => User::class, 'billable_id' => (string) $this->user->id]]))]);
+    Http::fake(['api.razorpay.com/v1/orders/*' => Http::response(jsonFixture('orders/order', ['notes' => ['billable_type' => User::class, 'billable_id' => (string) $this->user->id]]))]);
 
-    $this->postWebhook(fixture('webhooks/payment.captured'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/payment.captured'))->assertOk();
 
     expect(Invoice::query()->sole()->razorpay_payment_id)->toBe('pay_DESlfW9H8K9uqM');
 });
@@ -99,15 +99,15 @@ it('generates invoices for one-time payments', function () {
 it('does nothing when the module is disabled', function () {
     config(['razorpay-billing.invoices.enabled' => false]);
 
-    $this->postWebhook(fixture('webhooks/subscription.charged'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'))->assertOk();
 
     expect(Invoice::query()->count())->toBe(0);
 });
 
 it('does not invoice failed payments', function () {
-    Http::fake(['api.razorpay.com/v1/orders/*' => Http::response(fixture('orders/order', ['notes' => ['billable_type' => User::class, 'billable_id' => (string) $this->user->id]]))]);
+    Http::fake(['api.razorpay.com/v1/orders/*' => Http::response(jsonFixture('orders/order', ['notes' => ['billable_type' => User::class, 'billable_id' => (string) $this->user->id]]))]);
 
-    $this->postWebhook(fixture('webhooks/payment.failed'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/payment.failed'))->assertOk();
 
     expect(Invoice::query()->count())->toBe(0);
 });
@@ -122,7 +122,7 @@ it('renders the invoice with the configured renderer', function () {
     });
     config(['razorpay-billing.invoices.renderer' => 'test.renderer']);
 
-    $this->postWebhook(fixture('webhooks/subscription.charged'))->assertOk();
+    $this->postWebhook(jsonFixture('webhooks/subscription.charged'))->assertOk();
 
     expect(Invoice::query()->sole()->pdf_path)->toBe('invoices/INV-2026-27-000001.pdf');
 });
@@ -131,7 +131,7 @@ it('adds GST on top of tax-exclusive plan prices when syncing', function () {
     config(['razorpay-billing.plans' => ['pro-monthly' => ['name' => 'Pro', 'period' => 'monthly', 'interval' => 1, 'amount' => 1999900]]]);
     Http::fake(fn (Request $request) => $request->method() === 'GET'
         ? Http::response(['entity' => 'collection', 'count' => 0, 'items' => []])
-        : Http::response(fixture('plans/plan', ['id' => 'plan_new'])));
+        : Http::response(jsonFixture('plans/plan', ['id' => 'plan_new'])));
 
     $this->artisan('razorpay:sync-plans')->assertSuccessful();
 
@@ -145,7 +145,7 @@ it('sends inclusive prices unchanged', function () {
     ]);
     Http::fake(fn (Request $request) => $request->method() === 'GET'
         ? Http::response(['entity' => 'collection', 'count' => 0, 'items' => []])
-        : Http::response(fixture('plans/plan', ['id' => 'plan_new'])));
+        : Http::response(jsonFixture('plans/plan', ['id' => 'plan_new'])));
 
     $this->artisan('razorpay:sync-plans')->assertSuccessful();
 
@@ -153,7 +153,7 @@ it('sends inclusive prices unchanged', function () {
 });
 
 it('adds GST to tax-exclusive one-time charges', function () {
-    Http::fake(['api.razorpay.com/v1/orders' => Http::response(fixture('orders/order'))]);
+    Http::fake(['api.razorpay.com/v1/orders' => Http::response(jsonFixture('orders/order'))]);
 
     $checkout = $this->user->charge(10000);
 

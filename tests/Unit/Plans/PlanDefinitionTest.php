@@ -40,14 +40,14 @@ it('never sends methods to Razorpay', function () {
 
 it('matches a Razorpay plan on billing fields only', function () {
     $plan = PlanDefinition::fromConfig('pro-monthly', proPlan(), 'INR');
-    $remote = fixture('plans/plan');
+    $remote = jsonFixture('plans/plan');
 
     expect($plan->matches($remote))->toBeTrue()
-        ->and($plan->matches(fixture('plans/plan', ['item' => ['name' => 'Renamed']])))->toBeTrue()
-        ->and($plan->matches(fixture('plans/plan', ['item' => ['amount' => 2999900]])))->toBeFalse()
-        ->and($plan->matches(fixture('plans/plan', ['period' => 'yearly'])))->toBeFalse()
-        ->and($plan->matches(fixture('plans/plan', ['interval' => 3])))->toBeFalse()
-        ->and($plan->matches(fixture('plans/plan', ['item' => ['currency' => 'USD']])))->toBeFalse();
+        ->and($plan->matches(jsonFixture('plans/plan', ['item' => ['name' => 'Renamed']])))->toBeTrue()
+        ->and($plan->matches(jsonFixture('plans/plan', ['item' => ['amount' => 2999900]])))->toBeFalse()
+        ->and($plan->matches(jsonFixture('plans/plan', ['period' => 'yearly'])))->toBeFalse()
+        ->and($plan->matches(jsonFixture('plans/plan', ['interval' => 3])))->toBeFalse()
+        ->and($plan->matches(jsonFixture('plans/plan', ['item' => ['currency' => 'USD']])))->toBeFalse();
 });
 
 it('rejects invalid plan config', function (array $config, string $message) {
