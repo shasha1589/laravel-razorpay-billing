@@ -1,0 +1,31 @@
+{
+    "_doc": "https://razorpay.com/docs/api/payments/subscriptions/create-subscription",
+    "id": "sub_00000000000001",
+    "entity": "subscription",
+    "plan_id": "plan_00000000000001",
+    "customer_email": null,
+    "status": "created",
+    "current_start": null,
+    "current_end": null,
+    "ended_at": null,
+    "quantity": 1,
+    "notes": {
+        "billable_type": "Shasha1589\\RazorpayBilling\\Tests\\Support\\User",
+        "billable_id": "1",
+        "subscription_type": "default"
+    },
+    "charge_at": 1773461489,
+    "start_at": 1773461489,
+    "end_at": 1776450600,
+    "auth_attempts": 0,
+    "total_count": 6,
+    "paid_count": 0,
+    "customer_notify": true,
+    "created_at": 1773394958,
+    "expire_by": 1773547889,
+    "short_url": "https://rzp.io/rzp/Dqdqx3h",
+    "has_scheduled_changes": false,
+    "change_scheduled_at": null,
+    "source": "api",
+    "remaining_count": 6
+}

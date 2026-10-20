@@ -1,0 +1,14 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: max
+    paths:
+        - src
+        - config
+        - database
+        - routes
+        - tests/Support # a model using the Billable trait, so the trait is analysed
+    tmpDir: build/phpstan
+    configDirectories:
+        - config

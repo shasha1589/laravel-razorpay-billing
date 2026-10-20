@@ -1,0 +1,25 @@
+{
+    "_doc": "https://razorpay.com/docs/webhooks/invoices (abbreviated to the fields used)",
+    "entity": "event",
+    "account_id": "acc_BFQ7uQEaa7j2z7",
+    "event": "invoice.expired",
+    "contains": ["invoice"],
+    "payload": {
+        "invoice": {
+            "entity": {
+                "id": "inv_DEWZrK1R4nmaXu",
+                "entity": "invoice",
+                "status": "expired",
+                "customer_id": "cust_BtQNqzmBlAXyTY",
+                "order_id": "order_DEWZrMr2yNJek4",
+                "payment_id": null,
+                "amount": 479030,
+                "amount_paid": 0,
+                "paid_at": null,
+                "expired_at": 1567708384,
+                "subscription_status": null
+            }
+        }
+    },
+    "created_at": 1567708385
+}

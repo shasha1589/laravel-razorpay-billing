@@ -1,0 +1,43 @@
+{
+    "_doc": "https://razorpay.com/docs/webhooks/payloads/subscriptions",
+    "entity": "event",
+    "account_id": "acc_Fe3fPCmiStazv3",
+    "event": "subscription.paused",
+    "contains": ["subscription"],
+    "payload": {
+        "subscription": {
+            "entity": {
+                "id": "sub_00000000000001",
+                "entity": "subscription",
+                "plan_id": "plan_00000000000001",
+                "customer_id": "cust_FeOEa4PPa0by07",
+                "status": "paused",
+                "type": 1,
+                "current_start": 1600416437,
+                "current_end": 1602959400,
+                "ended_at": null,
+                "quantity": 1,
+                "notes": [],
+                "charge_at": null,
+                "start_at": 1600416437,
+                "end_at": 1610908200,
+                "auth_attempts": 0,
+                "total_count": 5,
+                "paid_count": 1,
+                "customer_notify": true,
+                "created_at": 1600416405,
+                "expire_by": null,
+                "short_url": null,
+                "has_scheduled_changes": false,
+                "change_scheduled_at": null,
+                "source": "api",
+                "offer_id": "offer_JHD834hjbxzhd38d",
+                "payment_method": "card",
+                "remaining_count": 4,
+                "pause_initiated_by": "self",
+                "cancel_initiated_by": null
+            }
+        }
+    },
+    "created_at": 1600416473
+}

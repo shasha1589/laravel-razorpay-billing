@@ -1,0 +1,18 @@
+{
+    "_doc": "https://razorpay.com/docs/api/orders/create",
+    "amount": 5000,
+    "amount_due": 5000,
+    "amount_paid": 0,
+    "attempts": 0,
+    "created_at": 1756455561,
+    "currency": "INR",
+    "entity": "order",
+    "id": "order_RB58MiP5SPFYyM",
+    "notes": {
+        "key1": "value3",
+        "key2": "value2"
+    },
+    "offer_id": null,
+    "receipt": "receipt#1",
+    "status": "created"
+}

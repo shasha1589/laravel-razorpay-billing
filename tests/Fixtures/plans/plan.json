@@ -1,0 +1,30 @@
+{
+    "_doc": "https://razorpay.com/docs/api/payments/subscriptions/create-plan",
+    "id": "plan_00000000000001",
+    "entity": "plan",
+    "interval": 1,
+    "period": "monthly",
+    "item": {
+        "id": "item_00000000000001",
+        "active": true,
+        "name": "Pro",
+        "description": null,
+        "amount": 1999900,
+        "unit_amount": 1999900,
+        "currency": "INR",
+        "type": "plan",
+        "unit": null,
+        "tax_inclusive": false,
+        "hsn_code": null,
+        "sac_code": null,
+        "tax_rate": null,
+        "tax_id": null,
+        "tax_group_id": null,
+        "created_at": 1580219935,
+        "updated_at": 1580219935
+    },
+    "notes": {
+        "plan_key": "pro-monthly"
+    },
+    "created_at": 1580219935
+}

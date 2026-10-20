@@ -1,0 +1,67 @@
+{
+    "name": "shasha1589/laravel-razorpay-billing",
+    "description": "Cashier-style subscription billing for Laravel on Razorpay: plans, subscriptions, UPI AutoPay, e-mandates, webhooks, refunds and GST invoices.",
+    "keywords": ["laravel", "razorpay", "billing", "subscriptions", "upi", "autopay", "gst", "cashier"],
+    "homepage": "https://github.com/shasha1589/laravel-razorpay-billing",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "shasha1589",
+            "homepage": "https://github.com/shasha1589"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/shasha1589/laravel-razorpay-billing/issues",
+        "source": "https://github.com/shasha1589/laravel-razorpay-billing",
+        "security": "https://github.com/shasha1589/laravel-razorpay-billing/security/advisories/new"
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/contracts": "^12.0|^13.0",
+        "illuminate/database": "^12.0|^13.0",
+        "illuminate/http": "^12.0|^13.0",
+        "illuminate/support": "^12.0|^13.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18",
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^3.0|^4.0"
+    },
+    "suggest": {
+        "barryvdh/laravel-dompdf": "Render GST invoices to PDF with an InvoiceRenderer (see README)."
+    },
+    "autoload": {
+        "psr-4": {
+            "Shasha1589\\RazorpayBilling\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shasha1589\\RazorpayBilling\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "pest --testsuite=Unit,Feature",
+        "test:integration": "pest --testsuite=Integration",
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "format": "pint",
+        "lint": "pint --test"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Shasha1589\\RazorpayBilling\\RazorpayBillingServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

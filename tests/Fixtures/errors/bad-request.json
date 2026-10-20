@@ -1,0 +1,12 @@
+{
+    "_doc": "https://razorpay.com/docs/api/customers/create",
+    "error": {
+        "code": "BAD_REQUEST_ERROR",
+        "description": "Contact number should be at least 8 digits, including country code",
+        "source": "business",
+        "step": "NA",
+        "reason": "invalid_contact_number",
+        "metadata": {},
+        "field": "contact"
+    }
+}

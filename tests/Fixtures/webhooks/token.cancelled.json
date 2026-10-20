@@ -1,0 +1,22 @@
+{
+    "_doc": "https://razorpay.com/docs/api/payments/recurring-payments/webhooks (abbreviated to the fields used)",
+    "entity": "event",
+    "account_id": "acc_BFQ7uQEaa7j2z7",
+    "event": "token.cancelled",
+    "contains": ["token"],
+    "payload": {
+        "token": {
+            "entity": {
+                "id": "token_FVIP5DVexjoZjF",
+                "entity": "token",
+                "method": "upi",
+                "recurring": true,
+                "recurring_details": {
+                    "status": "cancelled",
+                    "failure_reason": null
+                }
+            }
+        }
+    },
+    "created_at": 1600000000
+}

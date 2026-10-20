@@ -1,0 +1,14 @@
+{
+    "_doc": "https://razorpay.com/docs/api/customers/fetch-with-id",
+    "id": "cust_1Aa00000000001",
+    "entity": "customer",
+    "name": "Gaurav Kumar",
+    "email": "gaurav.kumar@example.com",
+    "contact": "9123456780",
+    "gstin": null,
+    "notes": {
+        "notes_key_1": "Tea, Earl Grey, Hot",
+        "notes_key_2": "Tea, Earl Grey… decaf."
+    },
+    "created_at": 1655298731
+}

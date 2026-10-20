@@ -1,0 +1,42 @@
+{
+    "_doc": "https://razorpay.com/docs/webhooks/refunds (abbreviated to the fields used)",
+    "entity": "event",
+    "account_id": "acc_E7OQJcEANmBHTC",
+    "event": "refund.processed",
+    "contains": ["refund", "payment"],
+    "payload": {
+        "refund": {
+            "entity": {
+                "id": "rfnd_FS8TWyPrCsa0OB",
+                "entity": "refund",
+                "amount": 50000,
+                "currency": "INR",
+                "payment_id": "pay_FPoJKWQQ8lK13n",
+                "notes": [],
+                "status": "processed",
+                "speed_requested": "optimum",
+                "speed_processed": "normal",
+                "created_at": 1597734071
+            }
+        },
+        "payment": {
+            "entity": {
+                "id": "pay_FPoJKWQQ8lK13n",
+                "entity": "payment",
+                "amount": 500000,
+                "currency": "INR",
+                "status": "captured",
+                "method": "netbanking",
+                "bank": "HDFC",
+                "amount_refunded": 190000,
+                "refund_status": "partial",
+                "captured": true,
+                "notes": [],
+                "fee": 11800,
+                "tax": 1800,
+                "created_at": 1597732000
+            }
+        }
+    },
+    "created_at": 1597734071
+}
